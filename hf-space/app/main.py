@@ -35,13 +35,13 @@ settings = get_settings()
 # Allow multiple origins for flexibility (localhost + production)
 allowed_origins = [
     settings.frontend_url,
-    "https://todo-app-chatbot-roan.vercel.app/",
+    "http://localhost:3000",
     "https://localhost:3000",
     "https://todo-app-chatbot-one.vercel.app",
     "https://todo-app-chatbot-roan.vercel.app",
 ]
-# Filter out empty strings and duplicates
-allowed_origins = list(set(filter(None, allowed_origins)))
+# Filter out empty strings, duplicates, and trailing slashes
+allowed_origins = list(set(origin.rstrip("/") for origin in allowed_origins if origin))
 
 app.add_middleware(
     CORSMiddleware,
