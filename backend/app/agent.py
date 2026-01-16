@@ -31,7 +31,7 @@ def get_openai_client() -> OpenAI:
 
 
 # Model to use for chat completions
-MODEL = "gemini-2.0-flash-exp"
+MODEL = "gemini-2.5-flash"
 
 
 # ============================================================================
@@ -380,12 +380,13 @@ async def run_agent(
         except Exception as e:
             # Handle API errors gracefully
             error_str = str(e).lower()
-            if "rate" in error_str or "quota" in error_str:
+            print(f"[AGENT ERROR] {e}")  # Debug logging
+            if "rate" in error_str or "quota" in error_str or "resource" in error_str:
                 return "I'm getting a lot of requests right now. Please try again in a moment."
-            elif "api_key" in error_str or "authentication" in error_str:
-                return "I'm having trouble connecting. Please try again later."
+            elif "api_key" in error_str or "authentication" in error_str or "invalid" in error_str:
+                return "I'm having trouble connecting. Please check API key configuration."
             else:
-                return "Something went wrong. Please try again."
+                return f"Something went wrong: {str(e)[:100]}"
 
     # Max iterations reached (shouldn't happen normally)
     return "I got a bit confused there. Could you try again?"
