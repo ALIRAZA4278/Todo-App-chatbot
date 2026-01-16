@@ -117,7 +117,7 @@ export function TaskCard({
   return (
     <div
       className={`
-        group relative bg-white border rounded-xl p-4
+        group relative bg-white border rounded-xl p-4 overflow-visible
         transition-all duration-200 ease-out
         ${task.completed
           ? "border-gray-100 bg-gray-50/50"
