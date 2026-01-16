@@ -237,7 +237,7 @@ export function TaskCard({
           )}
 
           {/* Menu */}
-          <div className="relative" ref={menuRef}>
+          <div className="relative z-40" ref={menuRef}>
             <button
               onClick={() => setIsMenuOpen(!isMenuOpen)}
               className={`
@@ -269,7 +269,7 @@ export function TaskCard({
             {/* Dropdown menu */}
             {isMenuOpen && (
               <div
-                className="absolute right-0 mt-2 w-44 bg-white rounded-xl shadow-xl border border-gray-100 py-1.5 z-20 animate-in fade-in slide-in-from-top-2 duration-200"
+                className="absolute right-0 mt-2 w-44 bg-white rounded-xl shadow-xl border border-gray-100 py-1.5 z-50 animate-in fade-in slide-in-from-top-2 duration-200"
                 role="menu"
               >
                 <button
