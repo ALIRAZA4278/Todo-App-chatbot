@@ -9,6 +9,7 @@ import { useRouter, usePathname } from "next/navigation";
 import { useSession } from "@/lib/auth";
 import { Spinner } from "@/components/ui";
 import { UserMenu } from "@/components/todo/UserMenu";
+import { ChatWidget } from "@/components/chat";
 import Link from "next/link";
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
@@ -86,6 +87,9 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
 
       {/* Main content */}
       <main>{children}</main>
+
+      {/* AI Chat Widget */}
+      <ChatWidget />
     </div>
   );
 }

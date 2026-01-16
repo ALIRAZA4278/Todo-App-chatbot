@@ -1,0 +1,307 @@
+openapi: 3.0.3
+info:
+  title: Todo AI Chatbot API
+  description: Chat endpoint for AI-powered todo management
+  version: 1.0.0
+
+servers:
+  - url: http://localhost:8000
+    description: Local development server
+
+paths:
+  /api/{user_id}/chat:
+    post:
+      summary: Send a chat message to the AI assistant
+      description: |
+        Send a natural language message to the AI assistant.
+        The assistant can manage tasks via MCP tools.
+        Returns the assistant's response.
+      operationId: sendChatMessage
+      tags:
+        - Chat
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: user_id
+          in: path
+          required: true
+          description: The authenticated user's ID (must match JWT)
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChatRequest'
+            examples:
+              addTask:
+                summary: Add a task
+                value:
+                  message: "add task buy groceries"
+              listTasks:
+                summary: List tasks
+                value:
+                  message: "show my tasks"
+                  conversation_id: 123
+              completeTask:
+                summary: Complete a task
+                value:
+                  message: "mark buy groceries as done"
+                  conversation_id: 123
+      responses:
+        '200':
+          description: Successful response from AI assistant
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ChatResponse'
+              examples:
+                taskAdded:
+                  summary: Task added successfully
+                  value:
+                    conversation_id: 123
+                    message:
+                      id: 456
+                      role: assistant
+                      content: "I've added 'Buy groceries' to your list."
+                      created_at: "2026-01-16T19:30:00Z"
+        '400':
+          description: Bad request - invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                detail: "message is required"
+        '401':
+          description: Unauthorized - missing or invalid token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                detail: "Invalid or expired token"
+        '403':
+          description: Forbidden - user_id mismatch
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                detail: "Access denied"
+        '422':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                detail: "message cannot be empty"
+        '429':
+          description: Rate limit exceeded
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                detail: "Rate limit exceeded. Please wait before sending another message."
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                detail: "An unexpected error occurred. Please try again."
+        '503':
+          description: AI service unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                detail: "AI service temporarily unavailable. Please try again shortly."
+
+  /api/{user_id}/conversations:
+    get:
+      summary: List user's conversations
+      description: Get all conversations for the authenticated user
+      operationId: listConversations
+      tags:
+        - Conversations
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: user_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: List of conversations
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConversationListResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/{user_id}/conversations/{conversation_id}/messages:
+    get:
+      summary: Get conversation messages
+      description: Get all messages for a specific conversation
+      operationId: getConversationMessages
+      tags:
+        - Conversations
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: user_id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: conversation_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: List of messages
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageListResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Conversation not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: JWT token from Better Auth
+
+  schemas:
+    ChatRequest:
+      type: object
+      required:
+        - message
+      properties:
+        message:
+          type: string
+          description: User's natural language message
+          minLength: 1
+          maxLength: 2000
+          example: "add task buy groceries"
+        conversation_id:
+          type: integer
+          description: Existing conversation ID (optional, creates new if omitted)
+          example: 123
+
+    ChatResponse:
+      type: object
+      required:
+        - conversation_id
+        - message
+      properties:
+        conversation_id:
+          type: integer
+          description: The conversation ID
+          example: 123
+        message:
+          $ref: '#/components/schemas/Message'
+
+    Message:
+      type: object
+      required:
+        - id
+        - role
+        - content
+        - created_at
+      properties:
+        id:
+          type: integer
+          description: Message ID
+          example: 456
+        role:
+          type: string
+          enum: [user, assistant]
+          description: Message author
+          example: assistant
+        content:
+          type: string
+          description: Message content
+          example: "I've added 'Buy groceries' to your list."
+        created_at:
+          type: string
+          format: date-time
+          description: Message timestamp (UTC, ISO 8601)
+          example: "2026-01-16T19:30:00Z"
+
+    Conversation:
+      type: object
+      required:
+        - id
+        - created_at
+        - updated_at
+      properties:
+        id:
+          type: integer
+          example: 123
+        created_at:
+          type: string
+          format: date-time
+          example: "2026-01-16T18:00:00Z"
+        updated_at:
+          type: string
+          format: date-time
+          example: "2026-01-16T19:30:00Z"
+
+    ConversationListResponse:
+      type: object
+      required:
+        - conversations
+      properties:
+        conversations:
+          type: array
+          items:
+            $ref: '#/components/schemas/Conversation'
+
+    MessageListResponse:
+      type: object
+      required:
+        - messages
+      properties:
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/Message'
+
+    ErrorResponse:
+      type: object
+      required:
+        - detail
+      properties:
+        detail:
+          type: string
+          description: Human-readable error message
+          example: "message is required"

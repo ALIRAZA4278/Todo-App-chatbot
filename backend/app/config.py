@@ -20,6 +20,9 @@ class Settings(BaseSettings):
     # JWT Configuration
     jwt_algorithm: str = "HS256"
 
+    # AI Chatbot Configuration (Phase III)
+    gemini_api_key: str = ""
+
     class Config:
         env_file = ".env"
         env_file_encoding = "utf-8"

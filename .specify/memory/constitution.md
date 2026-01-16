@@ -2,57 +2,121 @@
 ================================================================================
 SYNC IMPACT REPORT
 ================================================================================
-Version Change: 0.0.0 → 1.0.0 (MAJOR - Initial ratification)
+Version Change: 1.0.0 → 2.0.0 (MAJOR - Phase III AI Chatbot System Addition)
 
-Modified Principles: N/A (Initial version)
+Modified Principles:
+  - Principle VIII "Technology Stack Compliance" → Extended with AI/Agent stack
+  - Principle X "Quality Assurance" → Extended with AI/chatbot validation rules
 
 Added Sections:
-  - Core Principles (10 principles defined)
-  - Technology Stack (Mandatory)
-  - System Architecture Overview
-  - Authentication & Security Constitution
-  - API Constitution
-  - Database Constitution
-  - Monorepo & Spec-Kit Structure
-  - Claude Code Behavior Rules
-  - Quality & Validation Rules
-  - Phase Scope Boundaries
-  - Governance
+  - AI Architecture Overview
+  - Agent Constitution (Primary Agent + Logical Sub-Agents)
+  - MCP Tool Governance
+  - Data & Memory Constitution (Conversation, Message models)
+  - Natural Language Guarantees
+  - Response Quality Standards
+  - Error Handling Constitution
+  - Frontend UX Constitution (Chat UI)
+  - Core Design Principles (Agent-First, Stateless, Tool-Driven, Seamless Integration)
+  - Phase III Scope Boundaries
 
-Removed Sections: N/A (Initial version)
+Removed Sections:
+  - "Out of Scope" items moved to "In Scope" for Phase III
 
 Templates Requiring Updates:
-  ✅ plan-template.md - Constitution Check section compatible with new principles
-  ✅ spec-template.md - Requirements section aligns with FR/NFR format
-  ✅ tasks-template.md - Phase structure supports frontend/backend monorepo layout
+  ✅ plan-template.md - Constitution Check section compatible with new AI principles
+  ✅ spec-template.md - Requirements section aligns with FR/NFR format + AI requirements
+  ✅ tasks-template.md - Phase structure supports AI agent/MCP tool development
 
 Follow-up TODOs: None
 
 ================================================================================
 -->
 
-# Hackathon Todo – Phase II Constitution
+# Hackathon Todo – Phase III Constitution
 
-**Phase Name**: Full-Stack Web Application
+**Phase Name**: Full-Stack AI Chatbot System
 **Development Model**: Spec-Driven, Agentic Dev Stack
 **Implementation Tooling**: Claude Code + Spec-Kit Plus
 
 This constitution serves as the single source of truth for how the system is designed, built, secured, and evolved. All plans, tasks, implementations, and evaluations MUST comply with this document.
 
-## Primary Objective
+## System Mission
 
-Phase II transforms the previously built in-memory console-based Todo application into a modern, production-style, multi-user full-stack web application with persistent storage and authentication.
+Design and implement a production-grade, AI-powered Todo Management Platform that extends the existing Full-Stack Todo Application by integrating an intelligent, conversational AI chatbot.
 
-The system MUST:
-- Support multiple authenticated users
-- Persist data in a real cloud database
-- Enforce strict user-level data isolation
-- Be implemented entirely through Claude Code driven by specs
-- Be structured as a monorepo compatible with Spec-Kit Plus
+The chatbot MUST allow users to manage todos entirely via natural language, using a stateless, scalable backend architecture, powered by OpenAI Agents SDK (using Gemini API key) and MCP (Model Context Protocol) tools.
 
-**Manual coding by the developer is strictly prohibited.**
+This system MUST be built using the Agentic Dev Stack workflow with NO manual coding, relying strictly on Spec-Kit Plus and Claude Code.
 
-## Core Principles
+## Core Design Principles (NON-NEGOTIABLE)
+
+### Agent-First Architecture
+
+All business logic is driven by AI agents. No hard-coded intent routing. AI decides tool usage.
+
+**Rules:**
+- The AI agent MUST interpret user intent
+- The AI agent MUST select appropriate MCP tools
+- No static if/else routing for user commands
+- Agent behavior MUST be governed by system prompts, not code branches
+
+### Stateless Server
+
+Backend holds zero in-memory state. All context persists in the database. Safe for horizontal scaling and restarts.
+
+**Rules:**
+- Server MUST NOT store conversation state in memory
+- Server MUST NOT use server-side sessions for chat context
+- All conversation history MUST be loaded from database per request
+- System MUST survive server restarts without data loss
+
+### Tool-Driven AI (MCP)
+
+AI can ONLY modify system state via MCP tools. MCP tools are deterministic, stateless, and auditable.
+
+**Rules:**
+- AI agent MUST NOT directly access database
+- All task mutations MUST go through MCP tools
+- MCP tools MUST validate inputs before execution
+- MCP tools MUST return structured, predictable outputs
+
+### Seamless Integration
+
+AI chatbot integrates into the existing backend. No parallel systems or duplicated logic.
+
+**Rules:**
+- Chatbot MUST reuse existing Task model and database
+- Chatbot MUST use existing authentication system
+- No separate task storage for AI-created tasks
+- All tasks appear in both chat and traditional UI
+
+### Professional UX
+
+Chat UI MUST feel premium, modern, and reliable. AI responses MUST be friendly, concise, and confident.
+
+**Rules:**
+- Chat interface MUST clearly separate user and AI messages
+- Loading states MUST be visible during AI processing
+- Error messages MUST be user-friendly, not technical
+- AI responses MUST confirm actions taken
+
+## Existing System Context
+
+The AI chatbot extends the existing Full-Stack Todo Application with:
+
+| Component | Technology | Status |
+|-----------|------------|--------|
+| Frontend | Next.js (App Router) | Already implemented |
+| Backend | Python FastAPI | Already implemented |
+| Database | Neon Serverless PostgreSQL | Already implemented |
+| ORM | SQLModel | Already implemented |
+| Authentication | Better Auth | Already implemented |
+| Users | Identified by email/user_id | Already implemented |
+
+The chatbot MUST NOT replace existing logic — it MUST reuse and integrate with it.
+
+## Core Principles (Inherited from Phase II)
 
 ### I. Spec-Driven Development (NON-NEGOTIABLE)
 
@@ -101,6 +165,7 @@ No user may access another user's data under any circumstance.
 - Any mismatch MUST result in a 403 Forbidden response
 - Every database query MUST filter by authenticated `user_id`
 - No cross-user data access is permitted
+- AI agent MUST only access authenticated user's tasks and conversations
 
 ### V. RESTful API Consistency
 
@@ -120,7 +185,7 @@ The database schema MUST follow relational best practices.
 **Rules:**
 - All foreign keys MUST be enforced
 - Required fields MUST have NOT NULL constraints
-- Indexes MUST exist on frequently queried columns (`user_id`, `completed`)
+- Indexes MUST exist on frequently queried columns (`user_id`, `completed`, `conversation_id`)
 - All database access MUST use SQLModel ORM
 - Schema changes MUST be migration-based
 
@@ -143,19 +208,28 @@ The technology stack is fixed and non-negotiable.
 - TypeScript
 - Tailwind CSS
 - Better Auth (JavaScript-based authentication)
+- Chat UI components
 
 **Backend:**
 - Python FastAPI
 - SQLModel ORM
 - RESTful API architecture
+- OpenAI Agents SDK (with Gemini API key via OpenAI-compatible interface)
+- MCP tools for AI agent actions
 
 **Database:**
 - Neon Serverless PostgreSQL
 - SQLModel-managed schema
+- Conversation and Message tables for chat persistence
 
 **Authentication:**
 - Better Auth (frontend)
 - JWT-based verification (backend)
+
+**AI Framework:**
+- OpenAI Agents SDK
+- Gemini API key via OpenAI-compatible interface
+- Agent Runner handles execution
 
 ### IX. Separation of Concerns
 
@@ -166,17 +240,20 @@ The system MUST maintain clear boundaries between layers.
 - Authentication state management via Better Auth
 - JWT token attachment to all API requests
 - Client-side validation and user feedback
+- Chat UI rendering and message display
 
 **Backend Responsibilities:**
 - RESTful API endpoint exposure
 - JWT token verification on every request
 - Task ownership enforcement
 - Database communication via SQLModel
+- AI agent orchestration
+- MCP tool execution
 
 **Database Responsibilities:**
 - Data persistence
 - Relational integrity enforcement
-- User and task storage
+- User, task, conversation, and message storage
 
 ### X. Quality Assurance
 
@@ -188,142 +265,134 @@ The system MUST meet quality standards before deployment.
 - Persistent storage MUST be validated
 - API behavior MUST be consistent across endpoints
 - Frontend and backend concerns MUST remain separated
+- AI agent MUST correctly interpret natural language commands
+- MCP tools MUST execute without side effects beyond intended action
 
-## Technology Stack (Mandatory)
+## AI Architecture Overview
 
-| Layer | Technology | Purpose |
-|-------|------------|---------|
-| Frontend Framework | Next.js 16+ (App Router) | UI and routing |
-| Frontend Language | TypeScript | Type safety |
-| Frontend Styling | Tailwind CSS | Utility-first CSS |
-| Frontend Auth | Better Auth | Authentication management |
-| Backend Framework | FastAPI | REST API |
-| Backend ORM | SQLModel | Database operations |
-| Database | Neon PostgreSQL | Persistent storage |
-| Token Format | JWT | Stateless authentication |
-| Spec System | Spec-Kit Plus | Specification management |
-| Implementation Agent | Claude Code | Code generation |
-
-## System Architecture Overview
+### High-Level Flow
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
-│                              CLIENT (Browser)                               │
+│                              CHAT UI (Browser)                               │
+│  User types: "add task buy groceries"                                        │
 └─────────────────────────────────────────────────────────────────────────────┘
                                       │
                                       ▼
 ┌─────────────────────────────────────────────────────────────────────────────┐
-│                         FRONTEND (Next.js + Better Auth)                    │
-│  ┌─────────────┐  ┌──────────────┐  ┌─────────────────────────────────────┐ │
-│  │  App Router │  │ Better Auth  │  │  API Client (fetch + JWT header)    │ │
-│  │  (Pages)    │  │ (Sessions)   │  │  Authorization: Bearer <token>      │ │
-│  └─────────────┘  └──────────────┘  └─────────────────────────────────────┘ │
+│                    FRONTEND (Next.js + Better Auth)                          │
+│  POST /api/{user_id}/chat with JWT token                                     │
 └─────────────────────────────────────────────────────────────────────────────┘
                                       │
-                            JWT Token in Header
+                            JWT Token + Message
                                       │
                                       ▼
 ┌─────────────────────────────────────────────────────────────────────────────┐
-│                          BACKEND (FastAPI + SQLModel)                       │
-│  ┌──────────────────┐  ┌─────────────────┐  ┌───────────────────────────┐  │
-│  │ JWT Verification │  │ Route Handlers  │  │ User Isolation Middleware │  │
-│  │ (Middleware)     │  │ /api/{user_id}/ │  │ (user_id from JWT)        │  │
-│  └──────────────────┘  └─────────────────┘  └───────────────────────────┘  │
+│                          BACKEND (FastAPI)                                   │
+│  1. Verify JWT, extract user_id                                              │
+│  2. Load conversation history from DB                                        │
+│  3. Invoke AI agent with context + MCP tools                                 │
+│  4. Agent selects and calls MCP tools                                        │
+│  5. Persist new messages to DB                                               │
+│  6. Return AI response to frontend                                           │
 └─────────────────────────────────────────────────────────────────────────────┘
-                                      │
-                                SQLModel ORM
                                       │
                                       ▼
 ┌─────────────────────────────────────────────────────────────────────────────┐
-│                         DATABASE (Neon PostgreSQL)                          │
-│  ┌─────────────────────────────┐  ┌─────────────────────────────────────┐  │
-│  │  users (Better Auth)        │  │  tasks                              │  │
-│  │  - id (PK)                  │  │  - id (PK)                          │  │
-│  │  - email (UNIQUE)           │  │  - user_id (FK → users.id)          │  │
-│  │  - name                     │  │  - title                            │  │
-│  │  - created_at               │  │  - description                      │  │
-│  └─────────────────────────────┘  │  - completed                        │  │
-│                                    │  - created_at, updated_at           │  │
-│                                    └─────────────────────────────────────┘  │
+│                          MCP TOOLS (Stateless)                               │
+│  add_task │ list_tasks │ complete_task │ delete_task │ update_task           │
+│  get_my_user_info │ search_tasks                                             │
+└─────────────────────────────────────────────────────────────────────────────┘
+                                      │
+                                      ▼
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                         DATABASE (Neon PostgreSQL)                           │
+│  tasks │ conversations │ messages │ user (Better Auth)                       │
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
 
-## Authentication & Security Constitution
+## Agent Constitution
 
-### JWT Token Flow
+### Primary Agent: Todo Orchestrator Agent
 
-1. User authenticates via Better Auth on frontend
-2. Better Auth issues JWT token
-3. Frontend attaches JWT to all API requests: `Authorization: Bearer <token>`
-4. Backend verifies JWT using shared `BETTER_AUTH_SECRET`
-5. Backend extracts `user_id` from decoded token
-6. Backend validates URL `user_id` matches JWT `user_id`
+The system SHALL define a single primary AI agent responsible for:
 
-### Security Rules
+- Understanding user intent
+- Selecting MCP tools
+- Chaining multiple tools if needed
+- Generating final responses
 
-| Scenario | Required Response |
-|----------|-------------------|
-| No token provided | 401 Unauthorized |
-| Invalid token | 401 Unauthorized |
-| Expired token | 401 Unauthorized |
-| URL user_id ≠ JWT user_id | 403 Forbidden |
-| Valid token + matching user_id | Allow request |
+The agent MUST:
 
-### Environment Variables
+- Never hallucinate data (MUST use MCP tools to verify)
+- Never bypass MCP tools for task mutations
+- Always confirm user-affecting actions
+- Handle ambiguous commands by asking clarification
 
-| Variable | Purpose | Required By |
-|----------|---------|-------------|
-| `BETTER_AUTH_SECRET` | JWT signing/verification | Frontend + Backend |
-| `DATABASE_URL` | Neon PostgreSQL connection | Backend |
+### Logical Sub-Agents (Behavioral Responsibilities)
 
-## API Constitution
+These define behavioral modes, NOT separate processes:
 
-### Base Path
+| Sub-Agent | Responsibility |
+|-----------|----------------|
+| Task Management Intelligence | Adds, lists, updates, completes, deletes todos |
+| Conversation Context Intelligence | Restores chat context from database, enables continuity |
+| User Context Awareness | Understands authenticated user, responds to identity questions |
+| Confirmation & UX Intelligence | Produces friendly, professional responses |
+| Error Recovery Intelligence | Graceful handling of missing tasks, invalid input |
 
-All routes MUST be prefixed with `/api/`
+## MCP Tool Governance
 
-### Endpoints
+### MCP Server Rules
 
-| Method | Endpoint | Purpose |
-|--------|----------|---------|
-| GET | `/api/{user_id}/tasks` | List all tasks for user |
-| POST | `/api/{user_id}/tasks` | Create new task |
-| GET | `/api/{user_id}/tasks/{id}` | Get specific task |
-| PUT | `/api/{user_id}/tasks/{id}` | Full update of task |
-| DELETE | `/api/{user_id}/tasks/{id}` | Delete task |
-| PATCH | `/api/{user_id}/tasks/{id}/complete` | Toggle completion status |
+MCP tools are the ONLY allowed interface for task mutations.
 
-### Request/Response Contract
+MCP tools MUST:
+- Be stateless (no internal memory between calls)
+- Validate all inputs before execution
+- Persist results to database
+- Return structured outputs in consistent format
 
-**Create Task (POST)**
+### Required MCP Tools
+
+| Tool | Purpose | Parameters |
+|------|---------|------------|
+| `add_task` | Create todo | title (required), description (optional), due_date (optional) |
+| `list_tasks` | Retrieve todos | status, limit, offset, sort_by, sort_order |
+| `toggle_task_completion` | Mark complete/incomplete | task_id |
+| `delete_task` | Remove todo | task_id |
+| `get_my_user_info` | Get user account info | (none) |
+| `search_tasks` | Search by keyword | keyword, status |
+
+### MCP Tool Response Format
+
+All MCP tools MUST return:
+
 ```json
-// Request
-{ "title": "string (1-200 chars)", "description": "string (optional, max 1000 chars)" }
-
-// Response
-{ "id": "int", "user_id": "string", "title": "string", "description": "string|null", "completed": false, "created_at": "ISO8601", "updated_at": "ISO8601" }
+{
+  "status": "success" | "error",
+  "message": "Human-readable description",
+  "data": <relevant data or null>
+}
 ```
 
-**Error Response Format**
-```json
-{ "detail": "string" }
-```
+## Data & Memory Constitution
 
-## Database Constitution
+### Database Is The Only Memory
 
-### Schema Definition
+The system SHALL persist:
+- Tasks
+- Conversations
+- Messages
 
-**users** (managed by Better Auth)
-| Column | Type | Constraints |
-|--------|------|-------------|
-| id | string | PRIMARY KEY |
-| email | string | UNIQUE, NOT NULL |
-| name | string | |
-| created_at | timestamp | NOT NULL, DEFAULT NOW() |
+No server-side memory, cache, or session state is allowed.
 
-**tasks**
-| Column | Type | Constraints |
-|--------|------|-------------|
+### Required Models
+
+**Task** (existing)
+
+| Field | Type | Constraints |
+|-------|------|-------------|
 | id | integer | PRIMARY KEY, AUTOINCREMENT |
 | user_id | string | FOREIGN KEY → users.id, NOT NULL |
 | title | string | NOT NULL, LENGTH 1-200 |
@@ -332,119 +401,186 @@ All routes MUST be prefixed with `/api/`
 | created_at | timestamp | NOT NULL, DEFAULT NOW() |
 | updated_at | timestamp | NOT NULL, DEFAULT NOW() |
 
+**Conversation** (new)
+
+| Field | Type | Constraints |
+|-------|------|-------------|
+| id | integer | PRIMARY KEY, AUTOINCREMENT |
+| user_id | string | FOREIGN KEY → users.id, NOT NULL |
+| created_at | timestamp | NOT NULL, DEFAULT NOW() |
+| updated_at | timestamp | NOT NULL, DEFAULT NOW() |
+
+**Message** (new)
+
+| Field | Type | Constraints |
+|-------|------|-------------|
+| id | integer | PRIMARY KEY, AUTOINCREMENT |
+| user_id | string | FOREIGN KEY → users.id, NOT NULL |
+| conversation_id | integer | FOREIGN KEY → conversations.id, NOT NULL |
+| role | string | NOT NULL, ENUM: 'user', 'assistant' |
+| content | text | NOT NULL |
+| created_at | timestamp | NOT NULL, DEFAULT NOW() |
+
 ### Required Indexes
 
 - `tasks.user_id` - Query optimization for user task lists
 - `tasks.completed` - Filter optimization for completion status
+- `conversations.user_id` - Query optimization for user conversations
+- `messages.conversation_id` - Query optimization for conversation history
+- `messages.user_id` - User isolation enforcement
 
-## Monorepo & Spec-Kit Structure
+## Natural Language Guarantees
 
+The agent MUST correctly interpret:
+
+| Intent | Example Phrases |
+|--------|-----------------|
+| Task creation | "add task buy groceries", "create a todo for meeting", "remind me to call mom" |
+| Task listing (all) | "show my tasks", "list todos", "what do I have to do" |
+| Task listing (pending) | "show pending tasks", "what's not done", "incomplete todos" |
+| Task listing (completed) | "show completed tasks", "what did I finish" |
+| Task completion | "mark buy groceries as done", "complete task 5", "finish the meeting task" |
+| Task deletion | "delete task buy groceries", "remove todo 5", "cancel the meeting task" |
+| Task search | "find tasks about groceries", "search for meeting" |
+| User identity | "who am I", "my email kya hai", "meri account info dikhao" |
+| Ambiguous commands | Agent MUST ask for clarification |
+
+## Response Quality Standards
+
+AI responses MUST be:
+
+- **Clear**: No ambiguity about what action was taken
+- **Friendly**: Warm, conversational tone
+- **Professional**: No slang, typos, or unprofessional language
+- **Action-confirming**: Always state what was done
+- **UI-ready**: No excessive markdown, code blocks, or formatting clutter
+
+### Response Examples
+
+| Scenario | Good Response | Bad Response |
+|----------|---------------|--------------|
+| Task created | "Your task 'Buy groceries' has been added successfully." | "Task added to database with id 47" |
+| Task not found | "I couldn't find that task. Would you like me to show your list?" | "Error: Task not found in database" |
+| Ambiguous | "I found 3 tasks with 'meeting'. Which one did you mean?" | "Multiple results, please be specific" |
+
+## Error Handling Constitution
+
+The system MUST:
+
+- Never crash on bad input
+- Never expose stack traces to users
+- Offer recovery suggestions
+- Log errors for debugging (server-side only)
+
+### Error Response Examples
+
+| Error Type | User Message |
+|------------|--------------|
+| Task not found | "I couldn't find that task. Would you like me to show your list?" |
+| Invalid input | "I need a title for the task. What would you like to call it?" |
+| Database error | "Something went wrong on my end. Please try again in a moment." |
+| Authentication error | "Please sign in to manage your tasks." |
+
+## Frontend UX Constitution
+
+### Chat UI Requirements
+
+The Chat UI MUST:
+
+- Feel premium and modern
+- Support long conversations with scrolling
+- Show loading states during AI processing
+- Clearly separate user vs AI messages (different colors/alignment)
+- Handle reconnects gracefully
+- Persist conversation across page refreshes
+- Be responsive (mobile-friendly)
+
+### Message Display
+
+| Message Type | Visual Treatment |
+|--------------|------------------|
+| User message | Right-aligned, primary color background |
+| AI message | Left-aligned, neutral background |
+| Loading | Typing indicator or spinner |
+| Error | Red/warning styling, retry option |
+
+## API Constitution (Extended)
+
+### Chat Endpoint
+
+| Method | Endpoint | Purpose |
+|--------|----------|---------|
+| POST | `/api/{user_id}/chat` | Send message to AI agent |
+| GET | `/api/{user_id}/conversations` | List user's conversations |
+| GET | `/api/{user_id}/conversations/{id}/messages` | Get conversation history |
+
+### Chat Request/Response
+
+**Send Message (POST /api/{user_id}/chat)**
+
+```json
+// Request
+{
+  "message": "add task buy groceries",
+  "conversation_id": 123  // optional, creates new if omitted
+}
+
+// Response
+{
+  "conversation_id": 123,
+  "message": {
+    "id": 456,
+    "role": "assistant",
+    "content": "Your task 'Buy groceries' has been added successfully.",
+    "created_at": "2026-01-16T19:30:00Z"
+  }
+}
 ```
-/
-├── .spec-kit/
-│   └── config.yaml
-├── specs/
-│   ├── overview.md
-│   ├── architecture.md
-│   ├── features/
-│   │   └── task-crud.md
-│   ├── api/
-│   │   └── rest-endpoints.md
-│   ├── database/
-│   │   └── schema.md
-│   └── ui/
-│       ├── pages.md
-│       └── components.md
-├── frontend/
-│   ├── CLAUDE.md
-│   ├── src/
-│   ├── app/
-│   └── package.json
-├── backend/
-│   ├── CLAUDE.md
-│   ├── main.py
-│   ├── models.py
-│   ├── routes/
-│   └── requirements.txt
-├── CLAUDE.md
-└── .specify/
-    └── memory/
-        └── constitution.md
-```
 
-## Claude Code Behavior Rules
+## Authentication & Security Constitution
 
-Claude Code is the **sole entity** permitted to write or modify code.
+### Security Rules (Extended for Chat)
 
-### Claude Code MUST:
+| Scenario | Required Response |
+|----------|-------------------|
+| No token provided | 401 Unauthorized |
+| Invalid token | 401 Unauthorized |
+| Expired token | 401 Unauthorized |
+| URL user_id ≠ JWT user_id | 403 Forbidden |
+| Valid token + matching user_id | Allow request |
+| AI tries to access other user's tasks | Block at MCP tool level |
+| AI tries to access other user's conversations | Block at query level |
 
-1. Read relevant specs before any implementation
-2. Follow folder-specific `CLAUDE.md` instructions
-3. Implement frontend and backend changes consistently
-4. Adhere to all constitutional principles
-5. Update specs if implementation reveals missing details
+### Environment Variables (Extended)
 
-### Claude Code MUST NEVER:
+| Variable | Purpose | Required By |
+|----------|---------|-------------|
+| `BETTER_AUTH_SECRET` | JWT signing/verification | Frontend + Backend |
+| `DATABASE_URL` | Neon PostgreSQL connection | Backend |
+| `GEMINI_API_KEY` | AI model access | Backend |
+| `OPENAI_API_BASE` | OpenAI-compatible endpoint for Gemini | Backend |
 
-1. Implement features not explicitly defined in specs
-2. Invent APIs, data models, or contracts
-3. Skip authentication/authorization requirements
-4. Allow cross-user data access
-5. Hardcode secrets or tokens
-6. Make assumptions when specs are ambiguous (ask for clarification)
+## Phase III Scope Boundaries
 
-### Required Reading Order
+### In Scope (Phase III)
 
-1. Root `CLAUDE.md`
-2. Relevant feature specs (`@specs/features/*.md`)
-3. API specs (`@specs/api/*.md`)
-4. Database specs (`@specs/database/*.md`)
-5. Layer-specific `CLAUDE.md` (`/frontend/CLAUDE.md` or `/backend/CLAUDE.md`)
+- AI chatbot integration
+- Natural language task management
+- MCP tools for all task operations
+- Conversation persistence
+- Chat UI components
+- User identity queries via chatbot
+- Task search via chatbot
 
-## Quality & Validation Rules
+### Out of Scope (Phase III)
 
-### Mandatory Validations
-
-| Check | Criteria | Failure Action |
-|-------|----------|----------------|
-| User Isolation | No cross-user data access possible | Block deployment |
-| Authentication | All endpoints require valid JWT | Block deployment |
-| Authorization | URL user_id must match JWT user_id | Block deployment |
-| Persistence | Data survives server restart | Block deployment |
-| API Consistency | All endpoints follow constitution | Block deployment |
-| Layer Separation | No frontend-backend coupling | Block deployment |
-
-### Acceptance Criteria for Phase II
-
-- [ ] Multiple users can register and authenticate
-- [ ] Each user sees only their own tasks
-- [ ] Tasks persist in Neon PostgreSQL
-- [ ] JWT authentication protects all API endpoints
-- [ ] Unauthorized access returns appropriate errors
-- [ ] Frontend and backend run as separate services
-
-## Phase Scope Boundaries
-
-### In Scope (Phase II)
-
-- Full-stack web application
-- Task CRUD operations (Create, Read, Update, Delete)
-- Authentication with JWT via Better Auth
-- Persistent database storage (Neon PostgreSQL)
-- User isolation and data security
-- RESTful API design
-
-### Out of Scope (Phase II)
-
-These features are explicitly excluded and will be addressed in Phase III:
-
-- AI chatbot features
-- Natural language task creation
-- MCP (Model Context Protocol) tools
 - Task sharing between users
 - Task categories or tags
-- Due dates and reminders
+- Due dates with reminders/notifications
 - Real-time updates (WebSockets)
+- Voice input
+- Multi-language support beyond English
+- File attachments to tasks
 
 ## Governance
 
@@ -468,13 +604,14 @@ These features are explicitly excluded and will be addressed in Phase III:
 - All PRs MUST verify compliance with this constitution
 - Complexity MUST be justified against constitutional principles
 - Security violations result in immediate rejection
+- AI behavior MUST be tested against natural language guarantees
 
 ### Final Authority Statement
 
-This constitution is the **highest authority** for Phase II.
+This constitution is the **highest authority** for Phase III.
 
 All plans, tasks, implementations, and evaluations MUST comply with this document.
 
 **If a requirement is not written in a spec, it MUST NOT be implemented.**
 
-**Version**: 1.0.0 | **Ratified**: 2026-01-08 | **Last Amended**: 2026-01-08
+**Version**: 2.0.0 | **Ratified**: 2026-01-08 | **Last Amended**: 2026-01-16

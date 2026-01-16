@@ -12,7 +12,16 @@
       "Bash(del \"E:\\\\GIAIC Q4\\\\HACKATHON 2\\\\Full Stack Todo App\\\\frontend\\\\run-migration.js\")",
       "Bash(del \"E:\\\\GIAIC Q4\\\\HACKATHON 2\\\\Full Stack Todo App\\\\frontend\\\\auth.ts\")",
       "Bash(.venv/Scripts/python.exe:*)",
-      "Bash(git commit:*)"
+      "Bash(git commit:*)",
+      "Bash(.venvScriptsactivate)",
+      "Bash(uvicorn app.main:app:*)",
+      "Bash(\"E:\\\\GIAIC Q4\\\\HACKATHON 2\\\\Hackathon 2 Phase 3\\\\backend\\\\.venv\\\\Scripts\\\\python.exe\" -m uvicorn:*)",
+      "Bash(python:*)",
+      "Bash(chcp 65001)",
+      "Bash(python static_validation.py:*)",
+      "Bash(git fetch:*)",
+      "Bash(ls:*)",
+      "Bash(git add:*)"
     ]
   }
 }

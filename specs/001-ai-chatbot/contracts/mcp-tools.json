@@ -1,0 +1,152 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "MCP Tools Schema for Todo AI Chatbot",
+  "description": "OpenAI-compatible function definitions for MCP tools",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "add_task",
+        "description": "Create a new todo task for the user. Use when user wants to add, create, or make a new task.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "title": {
+              "type": "string",
+              "description": "Task title (1-200 characters)",
+              "minLength": 1,
+              "maxLength": 200
+            },
+            "description": {
+              "type": "string",
+              "description": "Optional task description (max 1000 characters)",
+              "maxLength": 1000
+            }
+          },
+          "required": ["title"]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "list_tasks",
+        "description": "List all tasks for the user. Use when user wants to see, show, or view their tasks.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "status": {
+              "type": "string",
+              "enum": ["all", "pending", "completed"],
+              "description": "Filter by task status",
+              "default": "all"
+            },
+            "limit": {
+              "type": "integer",
+              "description": "Maximum number of tasks to return",
+              "default": 50,
+              "minimum": 1
+            },
+            "offset": {
+              "type": "integer",
+              "description": "Number of tasks to skip (for pagination)",
+              "default": 0,
+              "minimum": 0
+            }
+          },
+          "required": []
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "toggle_task_completion",
+        "description": "Toggle a task's completion status. Use when user wants to complete, finish, mark done, or reopen a task.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "task_id": {
+              "type": "integer",
+              "description": "The ID of the task to toggle",
+              "minimum": 1
+            }
+          },
+          "required": ["task_id"]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "delete_task",
+        "description": "Permanently delete a task. IMPORTANT: Always confirm with the user before calling this function.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "task_id": {
+              "type": "integer",
+              "description": "The ID of the task to delete",
+              "minimum": 1
+            }
+          },
+          "required": ["task_id"]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "search_tasks",
+        "description": "Search tasks by keyword in title or description. Use when user wants to find or search for specific tasks.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "keyword": {
+              "type": "string",
+              "description": "Search term to match in task title or description",
+              "minLength": 1
+            },
+            "status": {
+              "type": "string",
+              "enum": ["all", "pending", "completed"],
+              "description": "Filter by task status",
+              "default": "all"
+            }
+          },
+          "required": ["keyword"]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "get_my_user_info",
+        "description": "Get the user's account information (email, name). Use when user asks about their identity or account.",
+        "parameters": {
+          "type": "object",
+          "properties": {},
+          "required": []
+        }
+      }
+    }
+  ],
+  "tool_response_format": {
+    "type": "object",
+    "properties": {
+      "status": {
+        "type": "string",
+        "enum": ["success", "error"],
+        "description": "Operation result status"
+      },
+      "message": {
+        "type": "string",
+        "description": "Human-readable description of what happened"
+      },
+      "data": {
+        "description": "Relevant data or null on error"
+      }
+    },
+    "required": ["status", "message", "data"]
+  }
+}
