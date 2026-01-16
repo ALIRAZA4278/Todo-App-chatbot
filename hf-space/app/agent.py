@@ -31,7 +31,7 @@ def get_openai_client() -> OpenAI:
 
 
 # Model to use for chat completions
-MODEL = "gemini-2.5-flash"
+MODEL = "gemini-2.5-flash-lite"
 
 
 # ============================================================================
